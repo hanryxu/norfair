@@ -254,6 +254,7 @@ class Tracker:
                     past_detections_length=self.past_detections_length,
                     reid_hit_counter_max=self.reid_hit_counter_max,
                     coord_transformations=coord_transformations,
+                    vqpy_index = detection.vqpy_index,
                 )
             )
 
@@ -483,6 +484,7 @@ class TrackedObject:
         past_detections_length: int,
         reid_hit_counter_max: Optional[int],
         coord_transformations: Optional[CoordinatesTransformation] = None,
+        vqpy_index: Optional[int] = None,
     ):
         if not isinstance(initial_detection, Detection):
             print(
@@ -535,6 +537,8 @@ class TrackedObject:
         self.abs_to_rel = None
         if coord_transformations is not None:
             self.update_coordinate_transformation(coord_transformations)
+        
+        self.vqpy_index = vqpy_index
 
     def tracker_step(self):
         if self.reid_hit_counter is None:
@@ -731,6 +735,8 @@ class TrackedObject:
 
         for past_detection in tracked_object.past_detections:
             self._conditionally_add_to_past_detections(past_detection)
+        # no need to use the old index
+        # self.vqpy_index = tracked_object.vqpy_index
 
     def update_coordinate_transformation(
         self, coordinate_transformation: CoordinatesTransformation
@@ -776,6 +782,7 @@ class Detection:
         data: Any = None,
         label: Hashable = None,
         embedding=None,
+        vqpy_index = None
     ):
         self.points = validate_points(points)
         self.scores = scores
@@ -784,6 +791,7 @@ class Detection:
         self.absolute_points = self.points.copy()
         self.embedding = embedding
         self.age = None
+        self.vqpy_index = vqpy_index
 
     def update_coordinate_transformation(
         self, coordinate_transformation: CoordinatesTransformation
