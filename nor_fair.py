@@ -36,6 +36,9 @@ class NorFairTracker(EvaDBTrackerAbstractFunction):
         self.tracker = Tracker(
             distance_function="euclidean",
             distance_threshold=distance_threshold,
+            # https://github.com/tryolabs/norfair/issues/65
+            # set initialization_delay to 0 to start tracking immediately
+            initialization_delay=0
         )
         self.prev_frame_id = None
 
@@ -58,7 +61,7 @@ class NorFairTracker(EvaDBTrackerAbstractFunction):
 
         # call tracker
         tracked_objects = self.tracker.update(
-            detections=norfair_detections, period=period
+            detections=norfair_detections, period=period, vqpy_frame_id=frame_id
         )
         bboxes_xyxy = []
         labels = []
@@ -66,6 +69,9 @@ class NorFairTracker(EvaDBTrackerAbstractFunction):
         ids = []
         for obj in tracked_objects:
             det = obj.last_detection.data
+            # check if detecting is present in current frame
+            if det.vqpy_frame_id != frame_id:
+                continue
             labels.append(det[0])
             bboxes_xyxy.append(det[1])
             scores.append(det[2])
