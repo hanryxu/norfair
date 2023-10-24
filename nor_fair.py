@@ -48,8 +48,8 @@ class NorFairTracker(EvaDBTrackerAbstractFunction):
 
         norfair_detections = [
             Detection(
-                points=bbox.reshape((2,2)),
-                scores=np.array([score]),
+                points=bbox.reshape((2, 2)),
+                scores=np.array([score, score]),
                 label=hash(label) % 10**8,
                 data=(label, bbox, score),
                 vqpy_frame_id=frame_id
@@ -70,10 +70,10 @@ class NorFairTracker(EvaDBTrackerAbstractFunction):
         scores = []
         ids = []
         for obj in tracked_objects:
-            det = obj.last_detection.data
             # check if detecting is present in current frame
-            if det.vqpy_frame_id != frame_id:
+            if obj.last_detection.vqpy_frame_id != frame_id:
                 continue
+            det = obj.last_detection.data
             labels.append(det[0])
             bboxes_xyxy.append(det[1])
             scores.append(det[2])
