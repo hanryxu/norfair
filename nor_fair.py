@@ -20,7 +20,8 @@ from evadb.functions.abstract.tracker_abstract_function import (
 from evadb.utils.generic_utils import try_to_import_norfair
 from evadb.utils.math_utils import get_centroid
 
-DISTANCE_THRESHOLD_CENTROID: int = 30
+# DISTANCE_THRESHOLD_CENTROID: int = 30
+DISTANCE_THRESHOLD_IOU = 0.7
 
 
 class NorFairTracker(EvaDBTrackerAbstractFunction):
@@ -28,13 +29,13 @@ class NorFairTracker(EvaDBTrackerAbstractFunction):
     def name(self) -> str:
         return "NorFairTracker"
 
-    def setup(self, distance_threshold=DISTANCE_THRESHOLD_CENTROID) -> None:
+    def setup(self, distance_threshold=DISTANCE_THRESHOLD_IOU) -> None:
         # https://github.com/tryolabs/norfair/blob/74b11edde83941dd6e32bcccd5fa849e16bf8564/norfair/tracker.py#L18
         try_to_import_norfair()
         from norfair import Tracker
 
         self.tracker = Tracker(
-            distance_function="euclidean",
+            distance_function="iou",
             distance_threshold=distance_threshold,
             # https://github.com/tryolabs/norfair/issues/65
             # set initialization_delay to 0 to start tracking immediately
@@ -47,7 +48,7 @@ class NorFairTracker(EvaDBTrackerAbstractFunction):
 
         norfair_detections = [
             Detection(
-                points=get_centroid(bbox),
+                points=bbox.reshape((2,2)),
                 scores=np.array([score]),
                 label=hash(label) % 10**8,
                 data=(label, bbox, score),
