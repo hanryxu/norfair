@@ -52,6 +52,7 @@ class NorFairTracker(EvaDBTrackerAbstractFunction):
                 scores=np.array([score]),
                 label=hash(label) % 10**8,
                 data=(label, bbox, score),
+                vqpy_frame_id=frame_id
             )
             for (bbox, score, label) in zip(bboxes, scores, labels)
         ]
@@ -62,7 +63,7 @@ class NorFairTracker(EvaDBTrackerAbstractFunction):
 
         # call tracker
         tracked_objects = self.tracker.update(
-            detections=norfair_detections, period=period, vqpy_frame_id=frame_id
+            detections=norfair_detections, period=period
         )
         bboxes_xyxy = []
         labels = []
