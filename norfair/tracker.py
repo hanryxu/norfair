@@ -406,6 +406,7 @@ class _TrackedObjectFactory:
         past_detections_length: int,
         reid_hit_counter_max: Optional[int],
         coord_transformations: CoordinatesTransformation,
+        vqpy_index: Optional[int],
     ) -> "TrackedObject":
         obj = TrackedObject(
             obj_factory=self,
@@ -419,6 +420,7 @@ class _TrackedObjectFactory:
             past_detections_length=past_detections_length,
             reid_hit_counter_max=reid_hit_counter_max,
             coord_transformations=coord_transformations,
+            vqpy_index=vqpy_index,
         )
         return obj
 
